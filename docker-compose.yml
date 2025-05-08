@@ -1,11 +1,20 @@
----
-version: "2"
-
 services:
   tor-socks-proxy:
     container_name: tor-socks-proxy
-    image: peterdavehello/tor-socks-proxy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "127.0.0.1:8853:53/udp"
       - "127.0.0.1:9150:9150/tcp"
+    volumes:
+      - ./wg0.conf:/etc/wireguard/wg0.conf:ro
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+      - SYS_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    privileged: true
     restart: unless-stopped
